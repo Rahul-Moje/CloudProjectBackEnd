@@ -1,6 +1,7 @@
 {
-    "accessKeyId": "ASIAWSMO3FWFMUCTTW4A",
-    "secretAccessKey": "8W22NhGbN42Mbkicwe49gSXQDnOKwclMZ/uQADJz",
-    "sessionToken": "FwoGZXIvYXdzENH//////////wEaDE0BuPj4lj5B5knW2iLAAZs/8NHUWUva9im4LqxAnrgt09gLrbck/8kDFr8eAfmal/uW3gc+W8yVP5X5KeZaNnZUqdWWwVfMUjtZl0P/6kkD826cOAg44i8Qnp97X3YAdoonwQPBLrUbMcafdMRYihXesGAY+hUWYBPpGHFS8Gz3oRBBrA63UHTzpnXUnMX/7zpn7mbof0Iktl5YeWMUEcVeSlrtsIhEQlBTnvCBBYwz/OLoq/iTII2GFsawHjNAAF7mbFF2yI4nIe0X7hmd/yj34bSRBjItEYDexcEJ5hIRHodS+Ez2Zr6M1rlZmaQYcVt9q1sVc1QIgtAiq/1XEM/h6prR",
-    "region": "us-east-1"
+    "accessKeyId": "ASIAWSMO3FWFJK3V3D75",
+    "secretAccessKey": "XDICzXp8UIc3GNyR3Fqog+LHEL4dXusBkbOur8iX",
+    "sessionToken": "FwoGZXIvYXdzEGAaDB+oUJm7Ghyx5yCfBiLAAccNdI9ymWAg8NgwiywKGSKyDPSOUJQUHJCUsLSsl9ixZKN4Ez4qecVQCWA9QHOdMrreO8aP5rzoy9Mq3O/Zh4b7xWWj8nXwEmRXrFgz/uW5Vk0xOMd/QLIYZc8zz/94ej/cS3yhNpPaSYveXsmLav0hkb0R+vAMoHVERR6+wzW8FY+rkXx6bHSB16FIEe4PvdsvTx0UCZ28TT+h37JJxuktPIHD1YNI9trE3C9ftgfJEs7Vkl4X7U74bZsXsOkjPCi3hNSRBjItrevP8Mid66o763fsdbBqUZLWZR+1QRwvfmwxbhPVTtSPIdUkEuiL5PWCF3O9",
+    "region": "us-east-1",
+    "endpoint": "http://localhost:8000"
 }

@@ -2,13 +2,12 @@
     "users": [
         {
             "Name": "Sourav Malik",
-            "Email": "sr343164@dal.ca",
-            "Topic_Arn": "arn:aws:sns:us-east-1:451808013706:3132594"
+            "Email": "sourav.mlk2@gmail.com",
+            "Topic_Arn": "arn:aws:sns:us-east-1:451808013706:75665"
         },
         {
-            "Name": "Sourav Malik",
             "Email": "sourav.mlk2@gmail.com",
-            "Topic_Arn": "arn:aws:sns:us-east-1:451808013706:4869395"
+            "Topic_Arn": "arn:aws:sns:us-east-1:451808013706:8336832"
         }
     ]
 }
