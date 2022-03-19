@@ -4,11 +4,9 @@ const fs = require('fs');
 let issueBookTemp = require('../../config/issueBookTemp.json');
 
 AWS.config.update({
-    credentials: {
-        accessKeyId: creds.accessKeyId,
-        secretAccessKey: creds.secretAccessKey,
-        sessionToken: creds.sessionToken,
-    },
+    accessKeyId: creds.accessKeyId,
+    secretAccessKey: creds.secretAccessKey,
+    sessionToken: creds.sessionToken,
     region: creds.region,
     endpoint: creds.endpoint
 });
@@ -18,7 +16,6 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 var sns = new AWS.SNS();
 
 exports.getBookByID = async (req, res) => {
-    console.log("entered");
     const params = {
         TableName: "books",
         Key: {
@@ -111,6 +108,7 @@ exports.publishText = async (req, res) => {
 };
 
 exports.createTopic = async (req, res) => {
+    const email_id = req;
     sns.createTopic({
         Name: Math.floor(Math.random() * 10000000).toString()
     }, (err, response) => {
@@ -119,45 +117,44 @@ exports.createTopic = async (req, res) => {
                 status: "500",
                 err: err
             })
+            console.log(err);
         } else {
             res.status(200).json({
                 status: "200",
                 Topic_Arn: response.TopicArn
             })
-            fs.readFile('./config/issueBookTemp.json', function (err, data) {
-                var json = JSON.parse(data);
-                json.users.push({
-                    Name: req.body.name,
-                    Email: req.body.email,
-                    Topic_Arn: response.TopicArn
-                })
-                fs.writeFile('./config/issueBookTemp.json', JSON.stringify(json), 'utf-8', function (err) {
-                    if (err) throw err
-                })
-            })
+            console.log("TopicArn created");
         }
+        const object = {
+            topicArn: response.TopicArn,
+            email: email_id
+        }
+        await docClient.update({
+            TableName: "users",
+            Key: {
+                "email": email_id
+            },
+            UpdateExpression: 'set TopicArn = :TopicArn',
+            ExpressionAttributeValues: {
+                ":TopicArn": topicArn,
+            },
+        }).promise().then(data => {
+            console.log("Topic Arn updated");
+            this.subscribe(object);
+        }).catch(console.error);
     })
 }
 
 exports.subscribe = async (req, res) => {
-    var index = issueBookTemp.users.findIndex(function (item, i) {
-        return item.Email === req.body.email
-    });
     sns.subscribe({
         Protocol: 'EMAIL',
-        TopicArn: issueBookTemp.users[index].Topic_Arn,
-        Endpoint: req.body.email
+        TopicArn: req.topicArn,
+        Endpoint: req.email
     }, (err, data) => {
         if (err) {
-            res.status(500).json({
-                status: "500",
-                err: err
-            })
+            console.log(err);
         } else {
-            res.status(200).json({
-                status: "200",
-                data: data
-            })
+            console.log("subscribed")
         }
     })
 }
