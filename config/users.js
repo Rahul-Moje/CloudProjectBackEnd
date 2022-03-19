@@ -7,12 +7,10 @@ var dynamodb = new AWS.DynamoDB();
 var params = {
     TableName: "users",
     KeySchema: [
-        { AttributeName: "email", KeyType: "HASH" },
-        { AttributeName: "id", KeyType: "RANGE" }
+        { AttributeName: "email", KeyType: "HASH" }
     ],
     AttributeDefinitions: [
-        { AttributeName: "email", AttributeType: "S" },
-        { AttributeName: "id", AttributeType: "N" }
+        { AttributeName: "email", AttributeType: "S" }
     ],
     ProvisionedThroughput: {
         ReadCapacityUnits: 5,
