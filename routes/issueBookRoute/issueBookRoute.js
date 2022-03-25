@@ -4,7 +4,7 @@ const issueBookController = require("../../controllers/issueBookController/issue
 
 
 router.get("/getBookByID/:id", issueBookController.getBookByID);
-router.post("/issueBook1", issueBookController.issueBook);
+router.post("/issueBook", issueBookController.issueBook);
 router.post("/publishText", issueBookController.publishText);
 router.post("/createTopic", issueBookController.createTopic);
 router.post("/subscribe", issueBookController.subscribe);
