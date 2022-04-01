@@ -3,6 +3,6 @@ const router = express.Router();
 
 const issueBookRoute = require("./issueBookRoute/issueBookRoute")
 
-router.use("/issueBook", issueBookRoute);
+router.use("/", issueBookRoute);
 
 module.exports = router;
