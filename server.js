@@ -3,6 +3,7 @@ const cors = require("cors");
 const routes = require("./routes/router")
 const bodyParser = require('body-parser');
 const port = process.env.PORT || "8080";
+const test = require("./routes/testRoute/testRoute")
 
 const app = express();
 const options = {
