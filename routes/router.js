@@ -4,7 +4,7 @@ const router = express.Router();
 const issueBookRoute = require("./issueBookRoute/issueBookRoute")
 const testRoute = require("./testRoute/testRoute")
 
-router.use("/issueBook", issueBookRoute);
+router.use("/", issueBookRoute);
 
 router.use("/test", testRoute);
 

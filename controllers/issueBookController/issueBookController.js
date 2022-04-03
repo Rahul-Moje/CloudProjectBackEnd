@@ -1,13 +1,13 @@
 const creds = require('../../config/creds.json');
 const AWS = require('aws-sdk');
 const fs = require('fs');
+const { response } = require('express');
 
 AWS.config.update({
-    accessKeyId: creds.accessKeyId,
-    secretAccessKey: creds.secretAccessKey,
-    sessionToken: creds.sessionToken,
-    region: creds.region
-    // endpoint: creds.endpoint
+    accessKeyId: "ASIAWSMO3FWFAKD5EOE5",
+    secretAccessKey: "3JRZRsHQjz3ydnjd7a7E90RyYJ2rAXKpSBr+Q4oV",
+    sessionToken: "FwoGZXIvYXdzEMf//////////wEaDFitbgdjGKtmBED0OyLAAfI5QbPzZolrOSiyd83CKX0/1Q21tv1DUzLaARpkL45mU/QxUVPjYH0xxZmSLNl403gCi1KBloa8UmmLNwwUeLvVeYsleyD7IrAlyNxNxH2/5WnAbMVtGIbKDECHWFcauUXTm5yMX+VKDMdq5JCboNPN8uBK773W5HFSTVIAnYcEC25rTn7pboGaVS9VTewUSy4TrOpomsyLIB1clMpvxkkiYb4H0pH/GReybbArMlTXHibvFVM2cjDvbnXhD/Gkayj8iKOSBjIt3rYxISLvYBdp3b9iZQCGK5U5CPGtuTqigbCx4lE3gB1x9yLvbiblq5rYPW9a",
+    region: "us-east-1"
 });
 
 const docClient = new AWS.DynamoDB.DocumentClient();
@@ -21,12 +21,29 @@ exports.getBookByID = async (req, res) => {
             "id": req.params.id
         }
     };
-    docClient.get(params).promise().then(async (bookDetails) => {
+    const bookDetails = await docClient.get(params).promise();
+
+    if (bookDetails) {
         res.status(200).json(bookDetails);
-    }).catch(err => {
-        console.log(err);
-        return res.status(400).json({ "message": "Unable to fetch Book details" });
-    });
+    } else {
+        res.status(404).json({ "message": "Unable to fetch Book details" });
+    }
+}
+
+exports.getContactNumberByEmail = async (req, res) => {
+    const params = {
+        TableName: "users",
+        Key: {
+            "email": req.params.email
+        }
+    };
+    const userDetails = await docClient.get(params).promise();
+
+    if (userDetails) {
+        res.status(200).json(userDetails);
+    } else {
+        res.status(404).json({ "message": "Unable to fetch user details" });
+    }
 }
 
 exports.issueBook = async (req, res) => {
@@ -52,12 +69,9 @@ exports.issueBook = async (req, res) => {
         };
         docClient.get(booksIssuedToUser).promise().then(async (userData) => {
             if (Object.keys(userData).length !== 0) {
-                console.log("entered");
                 if (userData.Item || userData.Item.booksIssued) {
-                    console.log(userData.Item.booksIssued.length)
-                    if (userData.Item.booksIssued.length >= 10) {
-                        console.log("3 books already issued. Cannot issue more books")
-                        res.status(400).json({ "message": "3 books already issued on your name. Cannot issue more books." })
+                    if (userData.Item.booksIssued.length >= 3) {
+                        return res.status(200).json({ "message": "3 books already issued on your name. Cannot issue more books." })
                     } else {
                         await docClient.update({
                             TableName: TableName,
@@ -76,41 +90,28 @@ exports.issueBook = async (req, res) => {
                             console.log("Text message sent successfully");
                             this.publishEmail(req);
                             console.log("Email sent successfully");
-                            return res.status(200).json({ message: newBookIssued })
+                            return res.status(200).json({ "message": "Book issued successfully. Confirmation has been sent to your registered email and contact number." })
                         }).catch(err => {
                             console.log(JSON.stringify(err))
-                            return res.status(400).json({ "message": "Unable to issue book: " + req.body.booksIssued[0] })
+                            return res.status(404).json({ "message": "Unable to issue book: " + req.body.booksIssued[0] })
                         });
-
-                        // await docClient.put(issueBookBody).promise().then((booksData) => {
-                        //     console.log("Book issued");
-                        //     this.publishText(req);
-                        //     console.log("Text message sent successfully");
-                        //     this.publishEmail(req);
-                        //     console.log("Email sent successfully");
-                        //     return res.status(200).json({ message: newBookIssued })
-                        // }).catch(err => {
-                        //     console.log(JSON.stringify(err))
-                        //     return res.status(400).json({ "message": "Unable to issue book: " + req.body.bookTitle })
-                        // })
                     }
                 }
                 else {
                     console.log("System error. Something went wrong.")
-                    res.status(400).json({ "message": "System error. Something went wrong." })
+                    res.status(404).json({ "message": "System error. Something went wrong." })
                 }
             } else {
-                console.log("entered else")
                 await docClient.put(issueBookBody).promise().then((booksData) => {
                     console.log("Book issued", JSON.stringify(booksData));
                     this.publishText(req);
                     console.log("Text message sent successfully");
                     this.publishEmail(req);
                     console.log("Email sent successfully");
-                    return res.status(200).json({ message: newBookIssued })
+                    return res.status(200).json({ "message": "Book issued successfully. Confirmation has been sent to your registered email and contact number." })
                 }).catch(err => {
                     console.log(JSON.stringify(err))
-                    return res.status(400).json({ "message": "Unable to issue book: " + req.body.bookTitle })
+                    return res.status(404).json({ "message": "Unable to issue book: " + req.body.bookTitle })
                 })
             }
         })
@@ -118,14 +119,12 @@ exports.issueBook = async (req, res) => {
 }
 
 exports.publishText = async (req, res) => {
-
     var message = req.body.booksIssued[0].bookTitle + " book has been issued on your name";
     let obj = {
         Message: message,
         Subject: "Book Issued",
         PhoneNumber: req.body.contactNumber
     };
-    console.log(" ----->" + JSON.stringify(obj));
     sns.publish(obj, (err, data) => {
         if (err) {
             return {
@@ -139,23 +138,6 @@ exports.publishText = async (req, res) => {
             };
         }
     })
-    /* sns.publish({
-        Message: message,
-        Subject: "Book Issued",
-        PhoneNumber: req.body.contactNumber
-    }, (err, data) => {
-        if (err) {
-            res.status(500).json({
-                status: "500",
-                err: err
-            })
-        } else {
-            res.status(200).json({
-                status: "200",
-                data: data
-            })
-        }
-    }) */
 };
 
 exports.createTopic = async (req, res) => {
@@ -212,22 +194,6 @@ exports.subscribe = async (req, res) => {
         }
     })
 }
-
-// exports.getTopicArnByEmail = async (req, res) => {
-//     const email_id = req;
-//     const params = {
-//         TableName: "users",
-//         Key: {
-//             "email": email_id
-//         }
-//     };
-//     docClient.get(params).promise().then(async (users) => {
-//         res.status(200).json(users);
-//     }).catch(err => {
-//         console.log(err);
-//         return res.status(400).json({ "message": "Unable to fetch user details" });
-//     });
-// }
 
 exports.publishEmail = async (req, res) => {
     const params = {
