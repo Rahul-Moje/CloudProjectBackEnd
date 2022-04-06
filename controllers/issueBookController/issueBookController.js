@@ -89,7 +89,7 @@ exports.issueBook = async (req, res) => {
                             console.log("Text message sent successfully");
                             this.publishEmail(req);
                             console.log("Email sent successfully");
-                            return res.status(200).json({ "message": "Book issued successfully. Confirmation has been sent to your registered email and contact number." })
+                            return res.status(200).json({ "message": "Book issued successfully. Confirmation has been sent to your registered email." })
                         }).catch(err => {
                             console.log(JSON.stringify(err))
                             return res.status(404).json({ "message": "Unable to issue book: " + req.body.booksIssued[0] })
